@@ -17,6 +17,9 @@ indent_size = 2
 # Possible values - lf, crlf, cr
 end_of_line = lf
 
+# Using single quotes in text
+quote_type = single
+
 # File character encoding
 # Possible values - latin1, utf-8, utf-16be, utf-16le
 charset = utf-8

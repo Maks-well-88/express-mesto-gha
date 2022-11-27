@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return v >= 2 && v <= 30;
       },
-      message: "Name must be more than 2 and less than 30 characters",
+      message: 'Name must be more than 2 and less than 30 characters',
     },
   },
   about: {
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return v >= 2 && v <= 30;
       },
-      message: "Description must be more than 2 and less than 30 characters",
+      message: 'Description must be more than 2 and less than 30 characters',
     },
   },
   avatar: {
@@ -31,4 +31,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);

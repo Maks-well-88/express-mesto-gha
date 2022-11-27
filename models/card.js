@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,7 +10,7 @@ const cardSchema = new mongoose.Schema({
       validator(v) {
         return v >= 2 && v <= 30;
       },
-      message: "Name must be more than 2 and less than 30 characters",
+      message: 'Name must be more than 2 and less than 30 characters',
     },
   },
   link: {
@@ -19,11 +19,11 @@ const cardSchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: 'user',
     required: true,
   },
   likes: {
-    type: [{ type: ObjectId, ref: "user" }], // тут нужно точно проверить правильность типа
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
     default: [],
   },
   createdAt: {
@@ -32,4 +32,4 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("card", cardSchema);
+module.exports = mongoose.model('card', cardSchema);
