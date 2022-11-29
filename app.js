@@ -1,17 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const router = require('./routes/users');
 
 const app = express();
 const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  req.user = { _id: '6385b11b9b79e1eeb57b58ff' };
+  next();
+});
+app.use('/users', router);
 
-app.listen(3000, (err) => {
-  if (err) {
-    console.log(`${err.name}, ${err.message}`);
-    return;
-  }
-  console.log(`Server OK, port ${PORT}`);
+mongoose.connect('mongodb://localhost:27017/mestodb', () => {
+  console.log('Connected to MongoDB');
+  app.listen(3000, (err) => {
+    if (err) throw err;
+    console.log(`Server OK, port ${PORT}`);
+  });
 });
