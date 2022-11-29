@@ -37,4 +37,52 @@ const createUser = async (req, res) => {
   }
 };
 
-module.exports = { getUser, getUsers, createUser };
+const updateProfile = async (req, res) => {
+  try {
+    const { name, about } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.user._id,
+      { name: name, about: about },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    return res.status(200).send(user);
+  } catch (error) {
+    console.error(`${error.name}: ${error.message}`);
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({ message: error.message });
+    }
+    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+  }
+};
+
+const updateAvatar = async (req, res) => {
+  try {
+    const { link } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.user._id,
+      { link: link },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    return res.status(200).send(user);
+  } catch (error) {
+    console.error(`${error.name}: ${error.message}`);
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({ message: error.message });
+    }
+    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+  }
+};
+
+module.exports = {
+  getUser,
+  getUsers,
+  createUser,
+  updateProfile,
+  updateAvatar,
+};

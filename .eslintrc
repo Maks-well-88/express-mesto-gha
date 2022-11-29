@@ -12,6 +12,7 @@
   "rules": {
     "no-console": "off",
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
-    "object-shorthand": ["error", "consistent"]
+    "object-shorthand": ["error", "consistent"],
+    "comma-dangle": ["error", "only-multiline"]
   }
 }
