@@ -42,4 +42,38 @@ const deleteCard = async (req, res) => {
   }
 };
 
-module.exports = { deleteCard, getCards, createCard };
+const likeCard = async (req, res) => {
+  try {
+    const card = await cardModel.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true }
+    );
+    return res.status(200).send(card);
+  } catch (error) {
+    console.error(`${error.name}: ${error.message}`);
+    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+  }
+};
+
+const dislikeLike = async (req, res) => {
+  try {
+    const card = await cardModel.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true }
+    );
+    return res.status(200).send(card);
+  } catch (error) {
+    console.error(`${error.name}: ${error.message}`);
+    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+  }
+};
+
+module.exports = {
+  deleteCard,
+  getCards,
+  createCard,
+  likeCard,
+  dislikeLike,
+};
