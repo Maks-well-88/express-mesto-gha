@@ -20,6 +20,11 @@ const getUser = async (req, res) => {
     return res.status(200).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
+    if (error.name === 'CastError') {
+      return res
+        .status(400)
+        .send({ message: 'Error! Incorrect request to the server' });
+    }
     return res.status(500).send({ message: 'Oops! Something went wrong...' });
   }
 };
