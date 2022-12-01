@@ -44,10 +44,10 @@ const createUser = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { name, about } = req.body;
+    const { userName, userDescription } = req.body;
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
-      { name: name, about: about },
+      { name: userName, about: userDescription },
       {
         new: true,
         runValidators: true,
@@ -65,11 +65,10 @@ const updateProfile = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   try {
-    const { avatar } = req.body;
-    console.log(avatar);
+    const { userAvatar } = req.body;
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
-      { avatar: avatar },
+      { avatar: userAvatar },
       {
         new: true,
         runValidators: true,

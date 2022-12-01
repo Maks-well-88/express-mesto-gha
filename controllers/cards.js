@@ -12,10 +12,10 @@ const getCards = async (req, res) => {
 
 const createCard = async (req, res) => {
   try {
-    const { name, link } = req.body;
+    const { cardName, cardLink } = req.body;
     const card = await cardModel.create({
-      name: name,
-      link: link,
+      name: cardName,
+      link: cardLink,
       owner: req.user._id,
     });
     return res.status(201).send(card);
