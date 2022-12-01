@@ -30,13 +30,19 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const { cardId } = req.params;
-    console.log(cardId);
-    await cardModel.findByIdAndDelete(cardId);
-    const cards = await cardModel.find({});
-    return res.status(200).send(cards);
+    const card = await cardModel.findById(req.params.cardId);
+    if (card === null) {
+      return res.status(404).send({ message: 'This card does not exist' });
+    }
+    await cardModel.findByIdAndDelete(req.params.cardId);
+    return res.status(200).send(await cardModel.find({}));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
+    if (error.name === 'CastError') {
+      return res
+        .status(400)
+        .send({ message: 'Error! Incorrect request to the server' });
+    }
     return res.status(500).send({ message: 'Oops! Something went wrong...' });
   }
 };
