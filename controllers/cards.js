@@ -13,13 +13,12 @@ const getCards = async (req, res) => {
 const createCard = async (req, res) => {
   try {
     const { name, link } = req.body;
-    await cardModel.create({
+    const card = await cardModel.create({
       name: name,
       link: link,
       owner: req.user._id,
     });
-    const cards = await cardModel.find({});
-    return res.status(201).send(cards);
+    return res.status(201).send(card);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
