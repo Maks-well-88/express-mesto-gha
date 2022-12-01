@@ -13,6 +13,10 @@ app.use((req, res, next) => {
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
+app.get('*', (req, res) => {
+  res.status(404).send({ message: 'This page does not exist' });
+});
+
 mongoose.connect('mongodb://localhost:27017/mestodb', () => {
   console.log('Connected to MongoDB');
   app.listen(3000, (err) => {
