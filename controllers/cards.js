@@ -4,7 +4,7 @@ const constants = require('../utils/constants');
 
 const getCards = async (req, res) => {
   try {
-    const cards = await cardModel.find({});
+    const cards = await cardModel.find({}).populate(['owner', 'likes']);
     return res.status(constants.OK).send(cards);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
@@ -14,11 +14,13 @@ const getCards = async (req, res) => {
 
 const createCard = async (req, res) => {
   try {
-    const card = await cardModel.create({
-      name: req.body.name,
-      link: req.body.link,
-      owner: req.user._id,
-    });
+    const card = await cardModel
+      .create({
+        name: req.body.name,
+        link: req.body.link,
+        owner: req.user._id,
+      })
+      .populate('owner');
     return res.status(constants.CREATED).send(card);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
@@ -31,9 +33,11 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await cardModel.findByIdAndDelete(req.params.cardId);
+    const card = await cardModel
+      .findByIdAndDelete(req.params.cardId)
+      .populate('owner');
     if (card === null) {
-      return res.status(constants.NOT_FOUND).send(constants.NOT_FOUND_MESSAGE);
+      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
     return res.status(constants.OK).send(card);
   } catch (error) {
@@ -47,13 +51,15 @@ const deleteCard = async (req, res) => {
 
 const likeCard = async (req, res) => {
   try {
-    const likedCard = await cardModel.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true },
-    );
+    const likedCard = await cardModel
+      .findByIdAndUpdate(
+        req.params.cardId,
+        { $addToSet: { likes: req.user._id } },
+        { new: true },
+      )
+      .populate('likes');
     if (likedCard === null) {
-      return res.status(constants.NOT_FOUND).send(constants.NOT_FOUND_MESSAGE);
+      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
     return res.status(constants.OK).send(likedCard);
   } catch (error) {
@@ -67,11 +73,13 @@ const likeCard = async (req, res) => {
 
 const dislikeLike = async (req, res) => {
   try {
-    const dislikedCard = await cardModel.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } },
-      { new: true },
-    );
+    const dislikedCard = await cardModel
+      .findByIdAndUpdate(
+        req.params.cardId,
+        { $pull: { likes: req.user._id } },
+        { new: true },
+      )
+      .populate('likes');
     if (dislikedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
