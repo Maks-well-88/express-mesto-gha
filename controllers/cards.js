@@ -19,9 +19,8 @@ const createCard = async (req, res) => {
         name: req.body.name,
         link: req.body.link,
         owner: req.user._id,
-      })
-      .populate('owner');
-    return res.status(constants.CREATED).send(card);
+      });
+    return res.status(constants.CREATED).send(card.populate('owner'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
@@ -33,13 +32,11 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await cardModel
-      .findByIdAndDelete(req.params.cardId)
-      .populate('owner');
+    const card = await cardModel.findByIdAndDelete(req.params.cardId);
     if (card === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(card);
+    return res.status(constants.OK).send(card.populate('owner'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -56,12 +53,11 @@ const likeCard = async (req, res) => {
         req.params.cardId,
         { $addToSet: { likes: req.user._id } },
         { new: true },
-      )
-      .populate('likes');
+      );
     if (likedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(likedCard);
+    return res.status(constants.OK).send(likedCard.populate('likes'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -78,13 +74,11 @@ const dislikeLike = async (req, res) => {
         req.params.cardId,
         { $pull: { likes: req.user._id } },
         { new: true },
-      )
-      .populate('likes');
+      );
     if (dislikedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-
-    return res.status(constants.OK).send(dislikedCard);
+    return res.status(constants.OK).send(dislikedCard.populate('likes'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
