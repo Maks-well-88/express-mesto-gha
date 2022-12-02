@@ -15,12 +15,15 @@ const getCards = async (req, res) => {
 const createCard = async (req, res) => {
   try {
     const card = await cardModel
-      .create({
-        name: req.body.name,
-        link: req.body.link,
-        owner: req.user._id,
-      });
-    return res.status(constants.CREATED).send(card.populate('owner'));
+      .create(
+        {
+          name: req.body.name,
+          link: req.body.link,
+          owner: req.user._id,
+        },
+      );
+    const cardWithOwner = await card.populate('owner');
+    return res.status(constants.CREATED).send(cardWithOwner);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
@@ -33,10 +36,11 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   try {
     const card = await cardModel.findByIdAndDelete(req.params.cardId);
+    const cardWithOwner = await card.populate('owner');
     if (card === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(card.populate('owner'));
+    return res.status(constants.OK).send(cardWithOwner);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -57,7 +61,7 @@ const likeCard = async (req, res) => {
     if (likedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(likedCard.populate('likes'));
+    return res.status(constants.OK).send(await likedCard.populate('likes'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -78,7 +82,7 @@ const dislikeLike = async (req, res) => {
     if (dislikedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(dislikedCard.populate('likes'));
+    return res.status(constants.OK).send(await dislikedCard.populate('likes'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -95,3 +99,6 @@ module.exports = {
   likeCard,
   dislikeLike,
 };
+
+// [PUT] Добавление лайка карточке - 2. В ответе приходит JSON-объект, Код ответа равен 200 или 201
+// [DELETE] Удаление лайка у карточки - Код ответа равен 200
