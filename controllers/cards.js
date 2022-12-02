@@ -36,11 +36,10 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   try {
     const card = await cardModel.findByIdAndDelete(req.params.cardId);
-    const cardWithOwner = await card.populate('owner');
     if (card === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(cardWithOwner);
+    return res.status(constants.OK).send(await card.populate('owner'));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -100,5 +99,4 @@ module.exports = {
   dislikeLike,
 };
 
-// [PUT] Добавление лайка карточке - 2. В ответе приходит JSON-объект, Код ответа равен 200 или 201
-// [DELETE] Удаление лайка у карточки - Код ответа равен 200
+// [DELETE] Удаление карточки с несуществующим в БД id
