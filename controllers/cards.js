@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const cardModel = require('../models/card');
 
 const getCards = async (req, res) => {
@@ -50,7 +51,7 @@ const likeCard = async (req, res) => {
     const likedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
-      { new: true }
+      { new: true },
     );
     if (likedCard === null) {
       return res.status(404).send({ message: 'This card does not exist' });
@@ -72,7 +73,7 @@ const dislikeLike = async (req, res) => {
     const dislikedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
-      { new: true }
+      { new: true },
     );
     if (dislikedCard === null) {
       return res.status(404).send({ message: 'This card does not exist' });

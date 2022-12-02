@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const userModel = require('../models/user');
 
 const getUsers = async (req, res) => {
@@ -49,7 +50,7 @@ const updateProfile = async (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     return res.status(200).send(user);
   } catch (error) {
@@ -69,7 +70,7 @@ const updateAvatar = async (req, res) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     return res.status(200).send(user);
   } catch (error) {
