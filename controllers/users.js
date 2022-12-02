@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 const userModel = require('../models/user');
+const constants = require('../utils/constants');
 
 const getUsers = async (req, res) => {
   try {
     const users = await userModel.find({});
-    return res.status(200).send(users);
+    return res.status(constants.OK).send(users);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
-    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
 
@@ -15,30 +16,28 @@ const getUser = async (req, res) => {
   try {
     const user = await userModel.findById(req.params.userId);
     if (!user) {
-      return res.status(404).send({ message: 'This user does not exist' });
+      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(200).send(user);
+    return res.status(constants.OK).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
-      return res
-        .status(400)
-        .send({ message: 'Error! Incorrect request to the server' });
+      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
     }
-    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
 
 const createUser = async (req, res) => {
   try {
     const user = await userModel.create(req.body);
-    return res.status(201).send(user);
+    return res.status(constants.CREATED).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
-      return res.status(400).send({ message: error.message });
+      return res.status(constants.BAD_REQUEST).send({ message: error.message });
     }
-    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
 
@@ -52,13 +51,19 @@ const updateProfile = async (req, res) => {
         runValidators: true,
       },
     );
-    return res.status(200).send(user);
+    if (!user) {
+      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+    }
+    return res.status(constants.OK).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
-      return res.status(400).send({ message: error.message });
+      return res.status(constants.BAD_REQUEST).send({ message: error.message });
     }
-    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+    if (error.name === 'CastError') {
+      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
+    }
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
 
@@ -72,13 +77,19 @@ const updateAvatar = async (req, res) => {
         runValidators: true,
       },
     );
-    return res.status(200).send(user);
+    if (!user) {
+      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+    }
+    return res.status(constants.OK).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
-      return res.status(400).send({ message: error.message });
+      return res.status(constants.BAD_REQUEST).send({ message: error.message });
     }
-    return res.status(500).send({ message: 'Oops! Something went wrong...' });
+    if (error.name === 'CastError') {
+      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
+    }
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
 
