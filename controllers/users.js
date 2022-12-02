@@ -12,8 +12,7 @@ const getUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(req.params.userId);
     if (!user) {
       return res.status(404).send({ message: 'This user does not exist' });
     }
@@ -44,10 +43,9 @@ const createUser = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { name, about } = req.body;
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
-      { name: name, about: about },
+      { name: req.body.name, about: req.body.about },
       {
         new: true,
         runValidators: true,
@@ -65,10 +63,9 @@ const updateProfile = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   try {
-    const { avatar } = req.body;
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
-      { avatar: avatar },
+      { avatar: req.body.avatar },
       {
         new: true,
         runValidators: true,

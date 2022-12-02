@@ -12,10 +12,9 @@ const getCards = async (req, res) => {
 
 const createCard = async (req, res) => {
   try {
-    const { name, link } = req.body;
     const card = await cardModel.create({
-      name: name,
-      link: link,
+      name: req.body.name,
+      link: req.body.link,
       owner: req.user._id,
     });
     return res.status(201).send(card);
@@ -30,12 +29,11 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await cardModel.findById(req.params.cardId);
+    const card = await cardModel.findByIdAndDelete(req.params.cardId);
     if (card === null) {
       return res.status(404).send({ message: 'This card does not exist' });
     }
-    await cardModel.findByIdAndDelete(req.params.cardId);
-    return res.status(200).send(await cardModel.find({}));
+    return res.status(200).send(card);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -49,15 +47,14 @@ const deleteCard = async (req, res) => {
 
 const likeCard = async (req, res) => {
   try {
-    const card = await cardModel.findById(req.params.cardId);
-    if (card === null) {
-      return res.status(404).send({ message: 'This card does not exist' });
-    }
     const likedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true }
     );
+    if (likedCard === null) {
+      return res.status(404).send({ message: 'This card does not exist' });
+    }
     return res.status(200).send(likedCard);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
@@ -72,15 +69,15 @@ const likeCard = async (req, res) => {
 
 const dislikeLike = async (req, res) => {
   try {
-    const card = await cardModel.findById(req.params.cardId);
-    if (card === null) {
-      return res.status(404).send({ message: 'This card does not exist' });
-    }
     const dislikedCard = await cardModel.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } },
       { new: true }
     );
+    if (dislikedCard === null) {
+      return res.status(404).send({ message: 'This card does not exist' });
+    }
+
     return res.status(200).send(dislikedCard);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);

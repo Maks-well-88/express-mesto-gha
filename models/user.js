@@ -6,24 +6,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
-    validate: {
-      validator(v) {
-        return v.length >= 2 && v.length <= 30;
-      },
-      message: 'Name must be more than 2 and less than 30 characters',
-    },
   },
   about: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 30,
-    validate: {
-      validator(v) {
-        return v.length >= 2 && v.length <= 30;
-      },
-      message: 'Description must be more than 2 and less than 30 characters',
-    },
   },
   avatar: {
     type: String,
