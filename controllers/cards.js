@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const cardModel = require('../models/card');
 const constants = require('../utils/constants');
 
@@ -39,7 +38,7 @@ const deleteCard = async (req, res) => {
     if (card === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(await card.populate('owner'));
+    return res.status(constants.OK).send(await card.populate(['owner', 'likes']));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -60,7 +59,7 @@ const likeCard = async (req, res) => {
     if (likedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(await likedCard.populate('likes'));
+    return res.status(constants.OK).send(await likedCard.populate(['owner', 'likes']));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -70,7 +69,7 @@ const likeCard = async (req, res) => {
   }
 };
 
-const dislikeLike = async (req, res) => {
+const dislikeCard = async (req, res) => {
   try {
     const dislikedCard = await cardModel
       .findByIdAndUpdate(
@@ -81,7 +80,7 @@ const dislikeLike = async (req, res) => {
     if (dislikedCard === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
-    return res.status(constants.OK).send(await dislikedCard.populate('likes'));
+    return res.status(constants.OK).send(await dislikedCard.populate(['owner', 'likes']));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'CastError') {
@@ -96,7 +95,5 @@ module.exports = {
   getCards,
   createCard,
   likeCard,
-  dislikeLike,
+  dislikeCard,
 };
-
-// [DELETE] Удаление карточки с несуществующим в БД id

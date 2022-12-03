@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const userModel = require('../models/user');
 const constants = require('../utils/constants');
 
