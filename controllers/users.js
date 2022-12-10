@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const constants = require('../utils/constants');
 
@@ -29,12 +30,22 @@ const getUser = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const user = await userModel.create(req.body);
+    const hash = await bcrypt.hash(req.body.password, 10);
+    const user = await userModel.create({
+      email: req.body.email,
+      password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+    });
     return res.status(constants.CREATED).send(user);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
       return res.status(constants.BAD_REQUEST).send({ message: error.message });
+    }
+    if (error.name === 'MongoServerError') {
+      return res.status(constants.BAD_REQUEST).send({ message: constants.ALREADY_EXISTS_MESSAGE });
     }
     return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
