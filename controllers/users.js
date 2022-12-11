@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 const constants = require('../utils/constants');
+require('dotenv').config();
+
+const { JWT_SECRET } = process.env;
 
 const getUsers = async (req, res) => {
   try {
@@ -47,6 +51,24 @@ const createUser = async (req, res) => {
     if (error.name === 'MongoServerError') {
       return res.status(constants.BAD_REQUEST).send({ message: constants.ALREADY_EXISTS_MESSAGE });
     }
+    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+  }
+};
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
+    }
+    const matched = await bcrypt.compare(password, user.password);
+    if (!matched) {
+      return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
+    }
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+    return res.send({ token });
+  } catch (error) {
     return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
@@ -109,4 +131,5 @@ module.exports = {
   createUser,
   updateProfile,
   updateAvatar,
+  login,
 };
