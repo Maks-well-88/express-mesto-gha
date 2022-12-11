@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
-const auth = require('../middlewares/auth');
+// const auth = require('../middlewares/auth');
 const { regexp } = require('../utils/regex');
 
 router.post(
@@ -31,8 +31,8 @@ router.post(
   createUser,
 );
 
-router.use('/users', auth, userRouter);
-router.use('/cards', auth, cardRouter);
+router.use('/users', userRouter);
+router.use('/cards', cardRouter);
 
 router.patch('*', (req, res) => {
   res.status(404).send({ message: 'This page does not exist' });
