@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const { regexp } = require('../utils/regex');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -8,14 +8,15 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(v) {
-        return validator.isEmail(v);
+        return regexp.emailCheck.test(v);
       },
-      message: 'is not correct',
+      message: 'Email is not correct',
     },
   },
   password: {
     type: String,
     select: false,
+    minlength: 6,
     required: true,
   },
   name: {
@@ -33,12 +34,10 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator: (v) => validator.isURL(v, {
-        protocols: ['http', 'https', 'ftp'],
-        require_tld: true,
-        require_protocol: true,
-      }),
-      message: 'must be a Valid URL',
+      validator(v) {
+        return regexp.urlCheck.test(v);
+      },
+      message: 'URL is not correct',
     },
     default:
       'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
