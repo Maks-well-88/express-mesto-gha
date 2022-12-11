@@ -35,14 +35,17 @@ const getUser = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
-    const user = await userModel.create({
-      email: req.body.email,
-      password: hash,
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-    });
-    return res.status(constants.CREATED).send(user);
+    const user = await userModel
+      .create({
+        email: req.body.email,
+        password: hash,
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+      });
+    const userWithoutPass = user.toObject();
+    delete userWithoutPass.password;
+    return res.status(constants.CREATED).send(userWithoutPass);
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);
     if (error.name === 'ValidationError') {
@@ -58,7 +61,7 @@ const createUser = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }).select('+password');
     if (!user) {
       return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
     }
@@ -67,7 +70,7 @@ const login = async (req, res) => {
       return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
     }
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    return res.send({ token });
+    return res.status(constants.OK).send({ token });
   } catch (error) {
     return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
