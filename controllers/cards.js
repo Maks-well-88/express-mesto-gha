@@ -34,10 +34,14 @@ const createCard = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    const card = await cardModel.findByIdAndDelete(req.params.cardId);
+    const card = await cardModel.findById(req.params.cardId);
+    if (card.owner._id.toString() !== req.user._id) {
+      return res.status(constants.FORBIDDEN).send({ message: constants.FORBIDDEN_MESSAGE });
+    }
     if (card === null) {
       return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
     }
+    await cardModel.findByIdAndDelete(req.params.cardId);
     return res.status(constants.OK).send(await card.populate(['owner', 'likes']));
   } catch (error) {
     console.error(`${error.name}: ${error.message}`);

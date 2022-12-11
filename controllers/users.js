@@ -80,9 +80,6 @@ const createUser = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    if (!password || !email) {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
-    }
     const user = await userModel.findOne({ email }).select('+password');
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
