@@ -64,10 +64,10 @@ const createUser = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await userModel.findOne({ email }).select('+password');
-    if (!user) {
-      return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
+    if (!password || !email) {
+      return res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
     }
+    const user = await userModel.findOne({ email }).select('+password');
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
       return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
@@ -75,6 +75,10 @@ const login = async (req, res) => {
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
     return res.status(constants.OK).send({ token });
   } catch (error) {
+    console.error(`${error.name}: ${error.message}`);
+    if (error.name === 'TypeError') {
+      return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
+    }
     return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
   }
 };
