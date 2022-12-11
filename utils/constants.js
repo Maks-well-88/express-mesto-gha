@@ -5,6 +5,7 @@ const NOT_FOUND = 404;
 const SERVER_ERROR = 500;
 const OK = 200;
 const CREATED = 201;
+const CONFLICT = 409;
 
 const SERVER_ERROR_MESSAGE = 'Oops! Something went wrong...';
 const NOT_FOUND_MESSAGE = 'The requested object was not found';
@@ -17,6 +18,7 @@ module.exports = {
   BAD_REQUEST,
   UNAUTHORIZED,
   NOT_FOUND,
+  CONFLICT,
   SERVER_ERROR,
   OK,
   CREATED,
