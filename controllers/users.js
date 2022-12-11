@@ -51,6 +51,9 @@ const createUser = async (req, res) => {
     if (error.name === 'ValidationError') {
       return res.status(constants.BAD_REQUEST).send({ message: error.message });
     }
+    if (error.name === 'Error') {
+      return res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
+    }
     if (error.name === 'MongoServerError') {
       return res.status(constants.BAD_REQUEST).send({ message: constants.ALREADY_EXISTS_MESSAGE });
     }
