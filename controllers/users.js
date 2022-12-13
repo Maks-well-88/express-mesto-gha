@@ -65,6 +65,9 @@ const login = async (req, res, next) => {
   try {
     const user = await userModel.findOne({ email }).select('+password');
     const matched = await bcrypt.compare(password, user.password);
+    if (!user) {
+      return next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
+    }
     if (!matched) {
       return next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
     }

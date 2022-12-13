@@ -13,11 +13,14 @@ const customError = (err, req, res, next) => {
     res.status(constants.CONFLICT).send({ message: constants.ALREADY_EXISTS_MESSAGE });
   }
   if (err.name === 'TypeError') {
-    res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
+    res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
   }
 
-  res.status(statusCode)
-    .send({ message: statusCode === 500 ? constants.SERVER_ERROR_MESSAGE : message });
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500 ? constants.SERVER_ERROR_MESSAGE : message,
+    });
 
   next();
 };
