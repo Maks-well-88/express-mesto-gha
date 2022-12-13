@@ -3,52 +3,45 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 const constants = require('../utils/constants');
 require('dotenv').config();
+const NotFoundError = require('../errors/notFoundError');
+const NotAuthError = require('../errors/notFoundError');
 
 const { JWT_SECRET } = process.env;
 
-const getUsers = async (req, res) => {
+const getUsers = async (res, next) => {
   try {
     const users = await userModel.find({});
     return res.status(constants.OK).send(users);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.params.userId);
     if (!user) {
-      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+      return next(new NotFoundError(constants.NOT_FOUND_MESSAGE));
     }
     return res.status(constants.OK).send(user);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'CastError') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user._id);
     if (!user) {
-      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+      return next(new NotFoundError(constants.NOT_FOUND_MESSAGE));
     }
     return res.status(constants.OK).send(user);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'CastError') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
     const user = await userModel
@@ -63,88 +56,54 @@ const createUser = async (req, res) => {
     delete userWithoutPass.password;
     return res.status(constants.CREATED).send(userWithoutPass);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'ValidationError') {
-      return res.status(constants.BAD_REQUEST).send({ message: error.message });
-    }
-    if (error.name === 'Error') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
-    }
-    if (error.name === 'MongoServerError') {
-      return res.status(constants.CONFLICT).send({ message: constants.ALREADY_EXISTS_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await userModel.findOne({ email }).select('+password');
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
-      return res.status(constants.UNAUTHORIZED).send({ message: constants.NO_ACCESS_MESSAGE });
+      return next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
     }
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
     return res.status(constants.OK).send({ token });
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'TypeError') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.NO_ACCESS_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   try {
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
       { name: req.body.name, about: req.body.about },
-      {
-        new: true,
-        runValidators: true,
-      },
+      { new: true, runValidators: true },
     );
     if (!user) {
-      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+      return next(new NotFoundError(constants.NOT_FOUND_MESSAGE));
     }
     return res.status(constants.OK).send(user);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'ValidationError') {
-      return res.status(constants.BAD_REQUEST).send({ message: error.message });
-    }
-    if (error.name === 'CastError') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req, res, next) => {
   try {
     const user = await userModel.findByIdAndUpdate(
       req.user._id,
       { avatar: req.body.avatar },
-      {
-        new: true,
-        runValidators: true,
-      },
+      { new: true, runValidators: true },
     );
     if (!user) {
-      return res.status(constants.NOT_FOUND).send({ message: constants.NOT_FOUND_MESSAGE });
+      return next(new NotFoundError(constants.NOT_FOUND_MESSAGE));
     }
     return res.status(constants.OK).send(user);
   } catch (error) {
-    console.error(`${error.name}: ${error.message}`);
-    if (error.name === 'ValidationError') {
-      return res.status(constants.BAD_REQUEST).send({ message: error.message });
-    }
-    if (error.name === 'CastError') {
-      return res.status(constants.BAD_REQUEST).send({ message: constants.CAST_ERROR_MESSAGE });
-    }
-    return res.status(constants.SERVER_ERROR).send({ message: constants.SERVER_ERROR_MESSAGE });
+    return next(error);
   }
 };
 

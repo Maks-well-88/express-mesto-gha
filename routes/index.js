@@ -3,8 +3,10 @@ const { celebrate, Joi } = require('celebrate');
 const { createUser, login } = require('../controllers/users');
 const userRouter = require('./users');
 const cardRouter = require('./cards');
-// const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth');
 const { regexp } = require('../utils/regex');
+const constants = require('../utils/constants');
+const NotFoundError = require('../errors/notFoundError');
 
 router.post(
   '/signin',
@@ -31,11 +33,8 @@ router.post(
   createUser,
 );
 
-router.use('/users', userRouter);
-router.use('/cards', cardRouter);
-
-router.patch('*', (req, res) => {
-  res.status(404).send({ message: 'This page does not exist' });
-});
+router.use('/users', auth, userRouter);
+router.use('/cards', auth, cardRouter);
+router.patch('*', (req, res, next) => next(new NotFoundError(constants.NOT_FOUND_PAGE)));
 
 module.exports = router;

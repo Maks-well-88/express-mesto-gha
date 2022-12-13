@@ -15,6 +15,7 @@ const ALREADY_EXISTS_MESSAGE = 'User with specified email already exists';
 const NO_ACCESS_MESSAGE = 'Wrong email or password';
 const AUTH_MESSAGE = 'Authorization required';
 const FORBIDDEN_MESSAGE = 'Access to the requested resource is denied';
+const NOT_FOUND_PAGE = 'This page does not exist';
 
 module.exports = {
   BAD_REQUEST,
@@ -32,4 +33,5 @@ module.exports = {
   NO_ACCESS_MESSAGE,
   AUTH_MESSAGE,
   FORBIDDEN_MESSAGE,
+  NOT_FOUND_PAGE,
 };
