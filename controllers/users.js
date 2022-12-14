@@ -4,7 +4,7 @@ const userModel = require('../models/user');
 const constants = require('../utils/constants');
 require('dotenv').config();
 const NotFoundError = require('../errors/notFoundError');
-const NotAuthError = require('../errors/notFoundError');
+const NotAuthError = require('../errors/notAuthError');
 
 const { JWT_SECRET } = process.env;
 
@@ -63,17 +63,16 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await userModel.findOne({ email }).select('+password');
-    const matched = await bcrypt.compare(password, user.password);
-    if (!user) {
-      return next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
+    if (user) {
+      const matched = await bcrypt.compare(password, user.password);
+      if (!matched) next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+      res.status(constants.OK).send({ token });
+      return;
     }
-    if (!matched) {
-      return next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
-    }
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    return res.status(constants.OK).send({ token });
+    if (!user) next(new NotAuthError(constants.NO_ACCESS_MESSAGE));
   } catch (error) {
-    return next(error);
+    next(error);
   }
 };
 
