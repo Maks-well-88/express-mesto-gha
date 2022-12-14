@@ -3,7 +3,7 @@ const constants = require('../utils/constants');
 require('dotenv').config();
 const NotAuthError = require('../errors/notAuthError');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = 'secret-key' } = process.env;
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
