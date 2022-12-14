@@ -52,9 +52,8 @@ const createUser = async (req, res, next) => {
         about: req.body.about,
         avatar: req.body.avatar,
       });
-    const userWithoutPass = user.toObject();
-    delete userWithoutPass.password;
-    return res.status(constants.CREATED).send(userWithoutPass);
+    const { password, ...userData } = user._doc;
+    return res.status(constants.CREATED).send(userData);
   } catch (error) {
     return next(error);
   }
