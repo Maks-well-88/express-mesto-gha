@@ -3,7 +3,7 @@ const constants = require('../utils/constants');
 const ForbiddenError = require('../errors/forbiddenError');
 const NotFoundError = require('../errors/notFoundError');
 
-const getCards = async (res, next) => {
+const getCards = async (req, res, next) => {
   try {
     const cards = await cardModel.find({}).populate(['owner', 'likes']);
     return res.status(constants.OK).send(cards);

@@ -8,7 +8,7 @@ const NotAuthError = require('../errors/notFoundError');
 
 const { JWT_SECRET } = process.env;
 
-const getUsers = async (res, next) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await userModel.find({});
     return res.status(constants.OK).send(users);

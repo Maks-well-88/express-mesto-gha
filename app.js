@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
 const router = require('./routes/index');
 const customError = require('./middlewares/error');
 
@@ -8,6 +9,7 @@ const app = express();
 const { PORT = 3000 } = process.env;
 
 app.use(express.json());
+app.use(helmet());
 app.use(router);
 app.use(errors());
 app.use(customError);
