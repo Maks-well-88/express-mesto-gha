@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+require('dotenv').config();
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const router = require('./routes/index');
