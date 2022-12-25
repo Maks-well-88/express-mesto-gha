@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const router = require('./routes/index');
 const customError = require('./middlewares/error');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -19,17 +20,16 @@ const limiter = rateLimit({
 app.use(express.json());
 app.use(helmet());
 app.use(limiter);
+app.use(requestLogger);
 app.use(router);
+app.use(errorLogger);
 app.use(errors());
 app.use(customError);
 
-mongoose.connect(
-  'mongodb://localhost:27017/mestodb',
-  (err) => {
-    if (err) throw err;
-    console.log('Connected to MongoDB');
-  },
-);
+mongoose.connect('mongodb://localhost:27017/mestodb', (err) => {
+  if (err) throw err;
+  console.log('Connected to MongoDB');
+});
 
 app.listen(3000, (err) => {
   if (err) throw err;
