@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const router = require('./routes/index');
 const customError = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('./middlewares/cors');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(limiter);
 app.use(requestLogger);
+app.use(cors);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
