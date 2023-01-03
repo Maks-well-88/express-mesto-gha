@@ -21,8 +21,8 @@ const limiter = rateLimit({
 
 app.use(express.json());
 app.use(helmet());
-app.use(limiter);
 app.use(requestLogger);
+app.use(limiter);
 app.use(cors);
 
 app.get('/crash-test', () => {
