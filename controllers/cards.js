@@ -2,6 +2,7 @@ const cardModel = require('../models/card');
 const constants = require('../utils/constants');
 const ForbiddenError = require('../errors/forbiddenError');
 const NotFoundError = require('../errors/notFoundError');
+const BadRequestError = require('../errors/badRequestError');
 
 const getCards = async (req, res, next) => {
   try {
@@ -19,6 +20,9 @@ const createCard = async (req, res, next) => {
     const cardWithOwner = await card.populate('owner');
     return res.status(constants.CREATED).send(cardWithOwner);
   } catch (error) {
+    if (error.name === 'ValidationError' || error.name === 'CastError') {
+      return next(new BadRequestError(`${Object.values(error.errors).map((err) => err.message).join(', ')}`));
+    }
     return next(error);
   }
 };
