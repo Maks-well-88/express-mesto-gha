@@ -35,6 +35,6 @@ router.post(
 
 router.use('/users', auth, userRouter);
 router.use('/cards', auth, cardRouter);
-router.patch('*', (req, res, next) => next(new NotFoundError(constants.NOT_FOUND_PAGE)));
+router.use('*', (req, res, next) => next(new NotFoundError(constants.NOT_FOUND_PAGE)));
 
 module.exports = router;
