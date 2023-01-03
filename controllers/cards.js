@@ -26,11 +26,11 @@ const createCard = async (req, res, next) => {
 const deleteCard = async (req, res, next) => {
   try {
     const card = await cardModel.findById(req.params.cardId);
-    if (card.owner._id.toString() !== req.user._id) {
-      return next(new ForbiddenError(constants.FORBIDDEN_MESSAGE));
-    }
     if (card === null) {
       return next(new NotFoundError(constants.NOT_FOUND_MESSAGE));
+    }
+    if (card.owner._id.toString() !== req.user._id) {
+      return next(new ForbiddenError(constants.FORBIDDEN_MESSAGE));
     }
     await cardModel.findByIdAndDelete(req.params.cardId);
     return res.status(constants.OK).send(await card.populate(['owner', 'likes']));
